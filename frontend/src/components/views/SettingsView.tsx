@@ -7,6 +7,7 @@ import {
   CheckCircle2 
 } from 'lucide-react';
 import { useSubscription } from '../../context/SubscriptionContext';
+import { DEFAULT_CURRENCY, SUPPORTED_CURRENCIES } from '../../constants/currencies';
 import { SkeletonCard } from '../ui/SkeletonLoader';
 import { ErrorState } from '../ui/ErrorState';
 
@@ -14,7 +15,7 @@ export const SettingsView: React.FC = () => {
   const { preferences, loading, error, updatePreferences } = useSubscription();
 
   const [monthlyBudget, setMonthlyBudget] = useState<string>('750.00');
-  const [currency, setCurrency] = useState<string>('USD');
+  const [currency, setCurrency] = useState<string>(DEFAULT_CURRENCY);
   const [reminderDays, setReminderDays] = useState<number>(3);
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [saveSuccess, setSaveSuccess] = useState<boolean>(false);
@@ -22,7 +23,7 @@ export const SettingsView: React.FC = () => {
   useEffect(() => {
     if (preferences) {
       setMonthlyBudget(String(preferences.monthly_budget));
-      setCurrency(preferences.currency || 'USD');
+      setCurrency(preferences.currency || DEFAULT_CURRENCY);
       setReminderDays(preferences.renewal_reminder_days || 3);
     }
   }, [preferences]);
@@ -90,7 +91,7 @@ export const SettingsView: React.FC = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2">
             <div>
               <label className="block text-xs font-semibold text-[#8888A0] uppercase mb-2">
-                Monthly Subscription Budget ($)
+                Monthly Subscription Budget
               </label>
               <input
                 type="number"
@@ -113,11 +114,9 @@ export const SettingsView: React.FC = () => {
                 onChange={(e) => setCurrency(e.target.value)}
                 className="w-full h-10 px-3.5 bg-[#0A0A0C] border border-white/10 rounded-xl text-sm text-white focus:outline-none focus:border-[#E50914] cursor-pointer"
               >
-                <option value="USD">USD ($ - US Dollar)</option>
-                <option value="EUR">EUR (€ - Euro)</option>
-                <option value="GBP">GBP (£ - British Pound)</option>
-                <option value="CAD">CAD ($ - Canadian Dollar)</option>
-                <option value="JPY">JPY (¥ - Japanese Yen)</option>
+                {SUPPORTED_CURRENCIES.map((option) => (
+                  <option key={option.code} value={option.code}>{option.fullLabel}</option>
+                ))}
               </select>
             </div>
           </div>

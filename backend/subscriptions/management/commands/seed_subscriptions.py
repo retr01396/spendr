@@ -30,7 +30,7 @@ class Command(BaseCommand):
 
         pref, _ = UserPreferences.objects.get_or_create(user=demo_user)
         pref.monthly_budget = Decimal('750.00')
-        pref.currency = 'USD'
+        pref.currency = 'INR'
         pref.renewal_reminder_days = 3
         pref.dark_mode = True
         pref.save()
@@ -39,8 +39,8 @@ class Command(BaseCommand):
             {
                 'name': 'Netflix',
                 'category': 'Streaming',
-                'amount': Decimal('15.99'),
-                'currency': 'USD',
+                'amount': Decimal('150.00'),
+                'currency': 'INR',
                 'billing_cycle': 'Monthly',
                 'next_billing_date': today + timedelta(days=3),
                 'status': 'Active',
@@ -49,8 +49,8 @@ class Command(BaseCommand):
             {
                 'name': 'AWS Cloud',
                 'category': 'Cloud',
-                'amount': Decimal('48.50'),
-                'currency': 'USD',
+                'amount': Decimal('4200.00'),
+                'currency': 'INR',
                 'billing_cycle': 'Monthly',
                 'next_billing_date': today + timedelta(days=5),
                 'status': 'Active',
@@ -59,8 +59,8 @@ class Command(BaseCommand):
             {
                 'name': 'Figma Pro',
                 'category': 'Software',
-                'amount': Decimal('15.00'),
-                'currency': 'USD',
+                'amount': Decimal('59.00'),
+                'currency': 'INR',
                 'billing_cycle': 'Monthly',
                 'next_billing_date': today + timedelta(days=10),
                 'status': 'Active',
@@ -69,8 +69,8 @@ class Command(BaseCommand):
             {
                 'name': 'OpenAI API',
                 'category': 'Software',
-                'amount': Decimal('32.00'),
-                'currency': 'USD',
+                'amount': Decimal('3200.00'),
+                'currency': 'INR',
                 'billing_cycle': 'Monthly',
                 'next_billing_date': today + timedelta(days=14),
                 'status': 'Active',
@@ -79,8 +79,8 @@ class Command(BaseCommand):
             {
                 'name': 'Spotify',
                 'category': 'Streaming',
-                'amount': Decimal('11.99'),
-                'currency': 'USD',
+                'amount': Decimal('1199.00'),
+                'currency': 'INR',
                 'billing_cycle': 'Monthly',
                 'next_billing_date': today + timedelta(days=18),
                 'status': 'Active',
@@ -89,8 +89,8 @@ class Command(BaseCommand):
             {
                 'name': 'GitHub Enterprise',
                 'category': 'Software',
-                'amount': Decimal('21.00'),
-                'currency': 'USD',
+                'amount': Decimal('2100.00'),
+                'currency': 'INR',
                 'billing_cycle': 'Monthly',
                 'next_billing_date': today + timedelta(days=22),
                 'status': 'Active',
@@ -99,8 +99,8 @@ class Command(BaseCommand):
             {
                 'name': 'Google Workspace',
                 'category': 'Software',
-                'amount': Decimal('18.00'),
-                'currency': 'USD',
+                'amount': Decimal('1800.00'),
+                'currency': 'INR',
                 'billing_cycle': 'Monthly',
                 'next_billing_date': today + timedelta(days=26),
                 'status': 'Upcoming',
@@ -109,8 +109,8 @@ class Command(BaseCommand):
             {
                 'name': 'Adobe Creative Cloud',
                 'category': 'Software',
-                'amount': Decimal('59.99'),
-                'currency': 'USD',
+                'amount': Decimal('5999.00'),
+                'currency': 'INR',
                 'billing_cycle': 'Monthly',
                 'next_billing_date': today + timedelta(days=30),
                 'status': 'Active',

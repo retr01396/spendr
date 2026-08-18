@@ -181,6 +181,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         method: 'POST',
         body: JSON.stringify({ name, email, password, confirm_password: confirmPassword }),
       });
+      if (!payload.user) {
+        return { success: false, message: 'Unable to create your account right now. Please try again.' };
+      }
       setUser(payload.user);
       return { success: true };
     } catch (error) {
@@ -192,10 +195,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           fieldErrors: error.fieldErrors,
         };
       }
-      return {
-        success: false,
-        message: 'Unable to create your account right now. Please try again.',
-      };
+      // Surface real network / unexpected errors (e.g. CORS block, JSON parse failure)
+      const networkMessage =
+        error instanceof Error && error.message
+          ? error.message
+          : 'Unable to create your account right now. Please try again.';
+      return { success: false, message: networkMessage };
     }
   };
 

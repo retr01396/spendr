@@ -20,13 +20,15 @@ import {
   Cell 
 } from 'recharts';
 import { useSubscription } from '../../context/SubscriptionContext';
+import { DEFAULT_CURRENCY, formatCurrency } from '../../constants/currencies';
 import { SkeletonDashboard } from '../ui/SkeletonLoader';
 import { EmptyState } from '../ui/EmptyState';
 import { ErrorState } from '../ui/ErrorState';
 import { MetallicCard3D } from '../3d/MetallicCard3D';
 
 export const DashboardView: React.FC = () => {
-  const { metrics, loading, error, subscriptions, openAddModal, openEditModal, openDeleteModal } = useSubscription();
+  const { metrics, preferences, loading, error, subscriptions, openAddModal, openEditModal, openDeleteModal } = useSubscription();
+  const activeCurrency = preferences?.currency || DEFAULT_CURRENCY;
 
   if (loading && !metrics) {
     return <SkeletonDashboard />;
@@ -68,7 +70,7 @@ export const DashboardView: React.FC = () => {
               </span>
             </div>
             <h3 className="text-3xl font-bold font-mono text-white tracking-tight">
-              ${monthly_spend.toFixed(2)}
+              {formatCurrency(monthly_spend, activeCurrency)}
             </h3>
             <p className="text-xs text-[#8888A0] mt-1 flex items-center gap-1">
               <span className="text-[#FF3B30] font-semibold flex items-center">
@@ -94,13 +96,13 @@ export const DashboardView: React.FC = () => {
               </span>
             </div>
             <h3 className="text-3xl font-bold font-mono text-white tracking-tight">
-              ${annual_projection.toFixed(2)}
+              {formatCurrency(annual_projection, activeCurrency)}
             </h3>
             <p className="text-xs text-[#8888A0] mt-1">Calculated 12-month run-rate</p>
           </div>
           <div className="mt-6 pt-4 border-t border-white/5 flex items-center justify-between text-xs text-[#666680]">
             <span>Average / month</span>
-            <span className="font-mono text-white">${(annual_projection / 12).toFixed(2)}</span>
+            <span className="font-mono text-white">{formatCurrency(annual_projection / 12, activeCurrency)}</span>
           </div>
         </div>
 
@@ -174,7 +176,7 @@ export const DashboardView: React.FC = () => {
                 <YAxis stroke="#666680" tick={{ fontSize: 11, fill: '#8888A0' }} axisLine={false} />
                 <RechartsTooltip
                   contentStyle={{ backgroundColor: '#0A0A0C', borderColor: 'rgba(255,255,255,0.15)', borderRadius: '8px', color: '#fff' }}
-                  formatter={(val: any) => [`$${Number(val).toFixed(2)}`, 'Spend']}
+                  formatter={(val: any) => [formatCurrency(Number(val), activeCurrency), 'Spend']}
                 />
                 <Area type="monotone" dataKey="amount" stroke="#E50914" strokeWidth={2.5} fillOpacity={1} fill="url(#spendrRedGradient)" />
               </AreaChart>
@@ -208,13 +210,13 @@ export const DashboardView: React.FC = () => {
                   </Pie>
                   <RechartsTooltip
                     contentStyle={{ backgroundColor: '#0A0A0C', borderColor: 'rgba(255,255,255,0.15)', borderRadius: '8px', color: '#fff' }}
-                    formatter={(val: any) => [`$${Number(val).toFixed(2)}`, 'Amount']}
+                    formatter={(val: any) => [formatCurrency(Number(val), activeCurrency), 'Amount']}
                   />
                 </PieChart>
               </ResponsiveContainer>
               <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
                 <span className="text-xs text-[#8888A0]">Total</span>
-                <span className="text-lg font-bold font-mono text-white">${monthly_spend.toFixed(0)}</span>
+                <span className="text-lg font-bold font-mono text-white">{formatCurrency(monthly_spend, activeCurrency)}</span>
               </div>
             </div>
           ) : (
@@ -284,7 +286,7 @@ export const DashboardView: React.FC = () => {
                       {sub.next_billing_date}
                     </td>
                     <td className="py-3.5 px-4 text-xs text-[#8888A0]">{sub.billing_cycle}</td>
-                    <td className="py-3.5 px-4 text-right font-mono font-bold text-white">${Number(sub.amount).toFixed(2)}</td>
+                    <td className="py-3.5 px-4 text-right font-mono font-bold text-white">{formatCurrency(Number(sub.amount), sub.currency || activeCurrency)}</td>
                     <td className="py-3.5 px-4 text-right">
                       <div className="flex items-center justify-end gap-2">
                         <button

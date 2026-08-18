@@ -33,7 +33,7 @@ class Subscription(models.Model):
     name = models.CharField(max_length=150)
     category = models.CharField(max_length=50, choices=CATEGORY_CHOICES, default='Software')
     amount = models.DecimalField(max_digits=10, decimal_places=2)
-    currency = models.CharField(max_length=10, default='USD')
+    currency = models.CharField(max_length=10, default='INR')
     billing_cycle = models.CharField(max_length=20, choices=CYCLE_CHOICES, default='Monthly')
     next_billing_date = models.DateField()
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Active')
@@ -55,7 +55,7 @@ class UserPreferences(models.Model):
         related_name='preferences',
     )
     monthly_budget = models.DecimalField(max_digits=10, decimal_places=2, default=500.00)
-    currency = models.CharField(max_length=10, default='USD')
+    currency = models.CharField(max_length=10, default='INR')
     renewal_reminder_days = models.IntegerField(default=3)
     dark_mode = models.BooleanField(default=True)
     updated_at = models.DateTimeField(auto_now=True)

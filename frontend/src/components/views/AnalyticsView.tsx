@@ -16,12 +16,14 @@ import {
   Cell 
 } from 'recharts';
 import { useSubscription } from '../../context/SubscriptionContext';
+import { DEFAULT_CURRENCY, formatCurrency } from '../../constants/currencies';
 import { SkeletonCard } from '../ui/SkeletonLoader';
 import { EmptyState } from '../ui/EmptyState';
 import { ErrorState } from '../ui/ErrorState';
 
 export const AnalyticsView: React.FC = () => {
-  const { metrics, loading, error, subscriptions } = useSubscription();
+  const { metrics, preferences, loading, error, subscriptions } = useSubscription();
+  const activeCurrency = preferences?.currency || DEFAULT_CURRENCY;
 
   if (loading && !metrics) {
     return <SkeletonCard className="h-96" />;
@@ -61,7 +63,7 @@ export const AnalyticsView: React.FC = () => {
             <span>Monthly Spend</span>
             <DollarSign className="w-4 h-4 text-[#E50914]" />
           </div>
-          <h3 className="text-3xl font-bold font-mono text-white">${monthly_spend.toFixed(2)}</h3>
+          <h3 className="text-3xl font-bold font-mono text-white">{formatCurrency(monthly_spend, activeCurrency)}</h3>
           <p className="text-xs text-[#8888A0] mt-1">Total active recurring expenses</p>
         </div>
 
@@ -70,7 +72,7 @@ export const AnalyticsView: React.FC = () => {
             <span>Annual Run-Rate</span>
             <TrendingUp className="w-4 h-4 text-[#FF3B30]" />
           </div>
-          <h3 className="text-3xl font-bold font-mono text-white">${annual_projection.toFixed(2)}</h3>
+          <h3 className="text-3xl font-bold font-mono text-white">{formatCurrency(annual_projection, activeCurrency)}</h3>
           <p className="text-xs text-[#8888A0] mt-1">12-month projected total</p>
         </div>
 
@@ -79,13 +81,13 @@ export const AnalyticsView: React.FC = () => {
             <span>Monthly Budget</span>
             <Target className="w-4 h-4 text-[#E0E0E0]" />
           </div>
-          <h3 className="text-3xl font-bold font-mono text-white">${monthly_budget.toFixed(2)}</h3>
+          <h3 className="text-3xl font-bold font-mono text-white">{formatCurrency(monthly_budget, activeCurrency)}</h3>
           <div className="mt-2 w-full bg-[#1A1A22] h-2 rounded-full overflow-hidden">
             <div className="bg-[#E50914] h-full rounded-full" style={{ width: `${budgetUsedPct}%` }} />
           </div>
           <p className="text-xs text-[#8888A0] mt-1 flex justify-between">
             <span>Used: {budgetUsedPct}%</span>
-            <span className="text-[#FF3B30] font-mono">${remaining_budget.toFixed(2)} left</span>
+            <span className="text-[#FF3B30] font-mono">{formatCurrency(remaining_budget, activeCurrency)} left</span>
           </p>
         </div>
 
@@ -120,7 +122,7 @@ export const AnalyticsView: React.FC = () => {
                 <YAxis stroke="#666680" tick={{ fontSize: 11, fill: '#8888A0' }} axisLine={false} />
                 <RechartsTooltip
                   contentStyle={{ backgroundColor: '#0A0A0C', borderColor: 'rgba(255,255,255,0.15)', borderRadius: '8px', color: '#fff' }}
-                  formatter={(val: any) => [`$${Number(val).toFixed(2)}`, 'Monthly Spend']}
+                  formatter={(val: any) => [formatCurrency(Number(val), activeCurrency), 'Monthly Spend']}
                 />
                 <Bar dataKey="amount" radius={[6, 6, 0, 0]}>
                   {category_distribution.map((_, index) => (
@@ -151,7 +153,7 @@ export const AnalyticsView: React.FC = () => {
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-mono font-bold text-white">${Number(sub.amount).toFixed(2)}</p>
+                    <p className="text-sm font-mono font-bold text-white">{formatCurrency(Number(sub.amount), sub.currency || activeCurrency)}</p>
                     <p className="text-[10px] text-[#8888A0]">/{sub.billing_cycle.toLowerCase()}</p>
                   </div>
                 </div>
@@ -162,7 +164,7 @@ export const AnalyticsView: React.FC = () => {
           <div className="pt-4 border-t border-white/5 text-xs text-[#8888A0] flex items-center justify-between">
             <span>Top 3 share:</span>
             <span className="font-mono text-white font-bold">
-              ${top_impact_subscriptions.reduce((acc, curr) => acc + Number(curr.amount), 0).toFixed(2)}/mo
+              {formatCurrency(top_impact_subscriptions.reduce((acc, curr) => acc + Number(curr.amount), 0), activeCurrency)}/mo
             </span>
           </div>
         </div>

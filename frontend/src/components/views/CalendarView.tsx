@@ -6,12 +6,14 @@ import {
   Plus 
 } from 'lucide-react';
 import { useSubscription } from '../../context/SubscriptionContext';
+import { DEFAULT_CURRENCY, formatCurrency } from '../../constants/currencies';
 import type { Subscription } from '../../types/subscription';
 import { SkeletonCard } from '../ui/SkeletonLoader';
 import { ErrorState } from '../ui/ErrorState';
 
 export const CalendarView: React.FC = () => {
-  const { subscriptions, loading, error, openAddModal, openEditModal } = useSubscription();
+  const { subscriptions, preferences, loading, error, openAddModal, openEditModal } = useSubscription();
+  const activeCurrency = preferences?.currency || DEFAULT_CURRENCY;
 
   const [currentDate, setCurrentDate] = useState(new Date(2026, 7, 1)); // August 2026 default
   const [selectedDateStr, setSelectedDateStr] = useState<string | null>(null);
@@ -136,7 +138,7 @@ export const CalendarView: React.FC = () => {
                   <div className="space-y-1 overflow-hidden">
                     {daySubs.slice(0, 2).map((s) => (
                       <div key={s.id} className="px-1.5 py-0.5 bg-[#E50914]/20 border border-[#E50914]/40 rounded text-[10px] font-medium text-white truncate">
-                        {s.name.split(' ')[0]} ${Number(s.amount).toFixed(0)}
+                        {s.name.split(' ')[0]} {formatCurrency(Number(s.amount), s.currency || activeCurrency)}
                       </div>
                     ))}
                     {daySubs.length > 2 && (
@@ -164,7 +166,7 @@ export const CalendarView: React.FC = () => {
                     <div key={sub.id} className="p-3 bg-[#0A0A0C] border border-[#E50914]/30 rounded-xl space-y-2">
                       <div className="flex items-center justify-between">
                         <span className="text-xs font-bold text-white">{sub.name}</span>
-                        <span className="text-xs font-mono font-bold text-[#FF3B30]">${Number(sub.amount).toFixed(2)}</span>
+                        <span className="text-xs font-mono font-bold text-[#FF3B30]">{formatCurrency(Number(sub.amount), sub.currency || activeCurrency)}</span>
                       </div>
                       <p className="text-[11px] text-[#8888A0]">{sub.category} • {sub.billing_cycle}</p>
                       <button

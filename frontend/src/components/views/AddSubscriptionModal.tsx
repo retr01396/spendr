@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Plus, Save, AlertCircle } from 'lucide-react';
 import { useSubscription } from '../../context/SubscriptionContext';
+import { DEFAULT_CURRENCY, SUPPORTED_CURRENCIES } from '../../constants/currencies';
 import type { BillingCycle, SubscriptionCategory, SubscriptionStatus } from '../../types/subscription';
 
 export const AddSubscriptionModal: React.FC = () => {
@@ -18,7 +19,7 @@ export const AddSubscriptionModal: React.FC = () => {
   const [name, setName] = useState('');
   const [category, setCategory] = useState<SubscriptionCategory>('Software');
   const [amount, setAmount] = useState('');
-  const [currency, setCurrency] = useState('USD');
+  const [currency, setCurrency] = useState(DEFAULT_CURRENCY);
   const [billingCycle, setBillingCycle] = useState<BillingCycle>('Monthly');
   const [nextBillingDate, setNextBillingDate] = useState('');
   const [status, setStatus] = useState<SubscriptionStatus>('Active');
@@ -42,7 +43,7 @@ export const AddSubscriptionModal: React.FC = () => {
       setName('');
       setCategory('Software');
       setAmount('');
-      setCurrency('USD');
+      setCurrency(DEFAULT_CURRENCY);
       setBillingCycle('Monthly');
       const nextWeek = new Date();
       nextWeek.setDate(nextWeek.getDate() + 7);
@@ -147,7 +148,7 @@ export const AddSubscriptionModal: React.FC = () => {
           <div className="grid grid-cols-3 gap-3">
             <div className="col-span-2">
               <label className="block text-xs font-semibold text-[#8888A0] uppercase mb-1">
-                Cost Amount ($) <span className="text-[#FF3B30]">*</span>
+                Cost Amount <span className="text-[#FF3B30]">*</span>
               </label>
               <input
                 type="number"
@@ -168,10 +169,9 @@ export const AddSubscriptionModal: React.FC = () => {
                 onChange={(e) => setCurrency(e.target.value)}
                 className="w-full h-10 px-3 bg-[#0A0A0C] border border-white/10 rounded-xl text-sm text-white focus:outline-none focus:border-[#E50914] cursor-pointer"
               >
-                <option value="USD">USD ($)</option>
-                <option value="EUR">EUR (€)</option>
-                <option value="GBP">GBP (£)</option>
-                <option value="CAD">CAD ($)</option>
+                {SUPPORTED_CURRENCIES.map((option) => (
+                  <option key={option.code} value={option.code}>{option.shortLabel}</option>
+                ))}
               </select>
             </div>
           </div>

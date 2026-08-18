@@ -10,6 +10,7 @@ import {
   XCircle 
 } from 'lucide-react';
 import { useSubscription } from '../../context/SubscriptionContext';
+import { DEFAULT_CURRENCY, formatCurrency } from '../../constants/currencies';
 import { SkeletonTableRow } from '../ui/SkeletonLoader';
 import { EmptyState } from '../ui/EmptyState';
 import { ErrorState } from '../ui/ErrorState';
@@ -17,6 +18,7 @@ import { ErrorState } from '../ui/ErrorState';
 export const SubscriptionsView: React.FC = () => {
   const { 
     subscriptions, 
+    preferences,
     loading, 
     error, 
     openAddModal, 
@@ -26,6 +28,7 @@ export const SubscriptionsView: React.FC = () => {
     categoryFilter,
     setCategoryFilter,
   } = useSubscription();
+  const activeCurrency = preferences?.currency || DEFAULT_CURRENCY;
 
   const [sortField, setSortField] = useState<'name' | 'amount' | 'date'>('date');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
@@ -192,7 +195,7 @@ export const SubscriptionsView: React.FC = () => {
                     </td>
                     <td className="py-4 px-4">{getStatusBadge(sub.status)}</td>
                     <td className="py-4 px-5 text-right font-mono font-bold text-base text-white">
-                      ${Number(sub.amount).toFixed(2)}
+                      {formatCurrency(Number(sub.amount), sub.currency || activeCurrency)}
                       <span className="text-[10px] text-[#8888A0] font-normal block">/{sub.billing_cycle.toLowerCase()}</span>
                     </td>
                     <td className="py-4 px-5 text-right">

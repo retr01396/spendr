@@ -1,9 +1,11 @@
 import React from 'react';
 import { Search, Bell, DollarSign } from 'lucide-react';
 import { useSubscription } from '../../context/SubscriptionContext';
+import { DEFAULT_CURRENCY, formatCurrency } from '../../constants/currencies';
 
 export const Header: React.FC = () => {
-  const { activeView, searchQuery, setSearchQuery, categoryFilter, setCategoryFilter, metrics } = useSubscription();
+  const { activeView, searchQuery, setSearchQuery, categoryFilter, setCategoryFilter, metrics, preferences } = useSubscription();
+  const activeCurrency = preferences?.currency || DEFAULT_CURRENCY;
 
   const titleMap: Record<string, string> = {
     dashboard: 'Overview Workspace',
@@ -53,7 +55,7 @@ export const Header: React.FC = () => {
         {metrics && (
           <div className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 bg-[#1A1A22] border border-white/10 rounded-lg text-xs font-mono font-semibold text-white">
             <DollarSign className="w-3.5 h-3.5 text-[#E50914]" />
-            <span>${metrics.monthly_spend.toFixed(2)}/mo</span>
+            <span>{formatCurrency(metrics.monthly_spend, activeCurrency)}/mo</span>
           </div>
         )}
 
