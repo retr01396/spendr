@@ -39,9 +39,22 @@ class ApiError extends Error {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://127.0.0.1:8000/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000/api';
+
+function getCookie(name: string): string {
+  const value = document.cookie
+    .split('; ')
+    .find((entry) => entry.startsWith(`${name}=`));
+
+  return value ? decodeURIComponent(value.split('=')[1] ?? '') : '';
+}
 
 async function getCsrfToken(): Promise<string> {
+  const existingToken = getCookie('csrftoken');
+  if (existingToken) {
+    return existingToken;
+  }
+
   try {
     const response = await fetch(`${API_BASE_URL}/auth/csrf/`, { credentials: 'include' });
     if (!response.ok) {

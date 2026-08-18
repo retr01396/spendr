@@ -1,89 +1,122 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
+import { ContactShadows, Float } from '@react-three/drei';
 import * as THREE from 'three';
 
 const CardMesh: React.FC = () => {
-  const meshRef = useRef<THREE.Group>(null);
-  const mouse = useRef({ x: 0, y: 0 });
-
-  const handlePointerMove = (e: any) => {
-    // Normalize mouse coordinates to [-1, 1]
-    const rect = e.gl.domElement.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-    const y = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
-    mouse.current = { x, y };
-  };
+  const groupRef = useRef<THREE.Group>(null);
 
   useFrame((state) => {
-    if (!meshRef.current) return;
-    const time = state.clock.getElapsedTime();
+    if (!groupRef.current) return;
 
-    // Floating idle sine motion
-    meshRef.current.position.y = Math.sin(time * 1.5) * 0.15;
+    const t = state.clock.getElapsedTime();
+    const pointerX = state.pointer.x;
+    const pointerY = state.pointer.y;
 
-    // Smooth cursor-reactive rotation (max ±10deg)
-    const targetRotX = mouse.current.y * 0.25;
-    const targetRotY = mouse.current.x * 0.35;
-
-    meshRef.current.rotation.x += (targetRotX - meshRef.current.rotation.x) * 0.08;
-    meshRef.current.rotation.y += (targetRotY - meshRef.current.rotation.y) * 0.08;
+    groupRef.current.position.y = Math.sin(t * 1.5) * 0.18;
+    groupRef.current.rotation.x = THREE.MathUtils.lerp(
+      groupRef.current.rotation.x,
+      pointerY * 0.4,
+      0.08,
+    );
+    groupRef.current.rotation.y = THREE.MathUtils.lerp(
+      groupRef.current.rotation.y,
+      pointerX * 0.55 + Math.sin(t * 0.8) * 0.2,
+      0.08,
+    );
   });
 
   return (
-    <group ref={meshRef} onPointerMove={handlePointerMove}>
-      {/* Metallic Card Body */}
-      <mesh position={[0, 0, 0]}>
-        <boxGeometry args={[3.4, 2.0, 0.08]} />
-        <meshStandardMaterial
-          color="#121216"
-          roughness={0.25}
-          metalness={0.9}
-        />
-      </mesh>
+    <Float speed={1.5} rotationIntensity={0.3} floatIntensity={0.6}>
+      <group ref={groupRef} position={[0, 0, 0]}>
+        <mesh position={[0, 0, 0]} castShadow receiveShadow>
+          <boxGeometry args={[3.5, 2.1, 0.18]} />
+          <meshPhysicalMaterial
+            color="#1a1d20"
+            metalness={0.96}
+            roughness={0.28}
+            clearcoat={1}
+            clearcoatRoughness={0.2}
+            reflectivity={0.8}
+            envMapIntensity={1.15}
+          />
+        </mesh>
 
-      {/* Red Edge Rim Line */}
-      <mesh position={[0, 0, 0.042]}>
-        <planeGeometry args={[3.36, 1.96]} />
-        <meshStandardMaterial
-          color="#0A0A0C"
-          roughness={0.4}
-          metalness={0.8}
-        />
-      </mesh>
+        <mesh position={[0, 0, 0.095]}>
+          <boxGeometry args={[3.12, 1.72, 0.04]} />
+          <meshPhysicalMaterial
+            color="#111417"
+            metalness={0.9}
+            roughness={0.42}
+            clearcoat={0.8}
+            clearcoatRoughness={0.35}
+            envMapIntensity={1.2}
+          />
+        </mesh>
 
-      {/* Flame Icon / Emblem on Card */}
-      <mesh position={[-1.2, 0.5, 0.05]}>
-        <boxGeometry args={[0.3, 0.3, 0.02]} />
-        <meshStandardMaterial color="#E50914" emissive="#E50914" emissiveIntensity={0.5} />
-      </mesh>
+        <mesh position={[0, -0.28, 0.12]}>
+          <planeGeometry args={[3.0, 0.26]} />
+          <meshStandardMaterial color="#2a2d31" metalness={0.95} roughness={0.24} />
+        </mesh>
 
-      {/* Card Metallic Strip */}
-      <mesh position={[0, -0.2, 0.05]}>
-        <planeGeometry args={[3.2, 0.3]} />
-        <meshStandardMaterial color="#1A1A22" roughness={0.1} metalness={0.95} />
-      </mesh>
+        <mesh position={[-1.15, 0.42, 0.14]}>
+          <boxGeometry args={[0.45, 0.45, 0.04]} />
+          <meshStandardMaterial color="#e50914" emissive="#e50914" emissiveIntensity={0.7} />
+        </mesh>
 
-      {/* Subversive Red Rim Glow Accent */}
-      <mesh position={[0, 0, -0.05]}>
-        <planeGeometry args={[3.6, 2.2]} />
-        <meshBasicMaterial color="#E50914" transparent opacity={0.15} />
-      </mesh>
-    </group>
+        <mesh position={[0, 0, -0.09]}>
+          <planeGeometry args={[3.8, 2.35]} />
+          <meshBasicMaterial color="#e50914" transparent opacity={0.12} />
+        </mesh>
+
+        <mesh position={[0, 0, 0.16]}>
+          <planeGeometry args={[3.35, 1.92]} />
+          <meshBasicMaterial color="#ff4d4d" transparent opacity={0.07} />
+        </mesh>
+      </group>
+    </Float>
   );
 };
 
 export const MetallicCard3D: React.FC<{ className?: string }> = ({ className = '' }) => {
+  const [isWebGLAvailable, setIsWebGLAvailable] = useState(true);
+
+  useEffect(() => {
+    const canvas = document.createElement('canvas');
+    const gl = canvas.getContext('webgl2') || canvas.getContext('webgl');
+    setIsWebGLAvailable(Boolean(gl));
+  }, []);
+
+  if (!isWebGLAvailable) {
+    return (
+      <div className={`relative h-full w-full overflow-hidden rounded-[28px] border border-[#FFFFFF1A] bg-[radial-gradient(circle_at_30%_20%,rgba(229,9,20,0.18),rgba(15,16,18,0.88)_40%,rgba(4,5,6,1)_100%)] shadow-[0_20px_60px_rgba(0,0,0,0.8)] ${className}`}>
+        <div className="absolute inset-0 rounded-[28px] bg-[linear-gradient(135deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02),rgba(229,9,20,0.12))]" />
+        <div className="absolute left-6 top-6 h-16 w-16 rounded-2xl border border-[#E50914]/40 bg-[#101214] shadow-[0_0_18px_rgba(229,9,20,0.35)]" />
+        <div className="absolute right-8 top-8 h-20 w-20 rounded-full border border-[#E50914]/35 bg-[#1a1d1f]" />
+        <div className="absolute inset-x-8 bottom-7 h-12 rounded-xl border border-[#FFFFFF12] bg-[#0e1114]" />
+      </div>
+    );
+  }
+
   return (
-    <div className={`w-full h-48 relative rounded-xl overflow-hidden pointer-events-auto ${className}`}>
-      <Canvas
-        camera={{ position: [0, 0, 4.5], fov: 45 }}
-        gl={{ alpha: true, antialias: true }}
-      >
-        <ambientLight intensity={0.6} />
-        <directionalLight position={[5, 5, 5]} intensity={1.2} />
-        <pointLight position={[-3, -3, 2]} color="#E50914" intensity={2.5} />
-        <CardMesh />
-      </Canvas>
+    <div className={`relative h-full w-full overflow-hidden rounded-[28px] border border-[#FFFFFF18] bg-[radial-gradient(circle_at_50%_30%,rgba(229,9,20,0.16),rgba(12,13,15,0.9)_38%,rgba(3,4,5,1)_100%)] shadow-[0_25px_70px_rgba(0,0,0,0.85)] ${className}`}>
+      <div className="absolute inset-0 rounded-[28px] bg-[linear-gradient(135deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02),rgba(229,9,20,0.13))]" />
+      <div className="absolute inset-0">
+        <Canvas
+          camera={{ position: [0, 0, 5.2], fov: 38 }}
+          dpr={[1, 2]}
+          gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
+        >
+          <color attach="background" args={['#050507']} />
+          <ambientLight intensity={0.8} />
+          <directionalLight position={[4, 4, 5]} intensity={1.65} color="#f5f7fb" />
+          <directionalLight position={[-4, 2, 3]} intensity={1.4} color="#a0a6b2" />
+          <pointLight position={[0, 0, 3]} intensity={18} color="#ff4d4d" distance={8} />
+          <spotLight position={[-3, 3, 5]} angle={0.45} penumbra={1} intensity={20} color="#f7f7f7" />
+          <CardMesh />
+          <ContactShadows position={[0, -1.7, 0]} opacity={0.25} scale={7} blur={2.5} far={2.5} />
+        </Canvas>
+      </div>
     </div>
   );
 };
