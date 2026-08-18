@@ -21,9 +21,17 @@ def get_list_env(name, default):
 
 
 SECRET_KEY = os.getenv('SECRET_KEY', get_random_secret_key())
-DEBUG = get_bool_env('DEBUG', True)
+DEBUG = get_bool_env('DEBUG', False)
 
-ALLOWED_HOSTS = get_list_env('ALLOWED_HOSTS', ['localhost', '127.0.0.1', '[::1]'])
+ALLOWED_HOSTS = get_list_env(
+    'ALLOWED_HOSTS',
+    [
+        'localhost',
+        '127.0.0.1',
+        '[::1]',
+        'spendr-backend-5yiu.onrender.com',
+    ]
+)
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -32,12 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
-    # Third party apps
     'rest_framework',
     'corsheaders',
-
-    # Local apps
     'subscriptions',
 ]
 
@@ -79,10 +83,22 @@ DATABASES = {
 }
 
 AUTH_PASSWORD_VALIDATORS = [
-    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
+    {
+        'NAME':
+        'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'
+    },
+    {
+        'NAME':
+        'django.contrib.auth.password_validation.MinimumLengthValidator'
+    },
+    {
+        'NAME':
+        'django.contrib.auth.password_validation.CommonPasswordValidator'
+    },
+    {
+        'NAME':
+        'django.contrib.auth.password_validation.NumericPasswordValidator'
+    },
 ]
 
 LANGUAGE_CODE = 'en-us'
@@ -110,8 +126,11 @@ CORS_ALLOWED_ORIGINS = get_list_env(
         'http://127.0.0.1:5173',
         'http://localhost:5174',
         'http://127.0.0.1:5174',
+        'https://spendr-blue.vercel.app',
+        'https://spendr-8gquyn2s-nathans-projects-7ee4c021.vercel.app',
     ]
 )
+
 CSRF_TRUSTED_ORIGINS = get_list_env(
     'CSRF_TRUSTED_ORIGINS',
     [
@@ -119,18 +138,39 @@ CSRF_TRUSTED_ORIGINS = get_list_env(
         'http://127.0.0.1:5173',
         'http://localhost:5174',
         'http://127.0.0.1:5174',
+        'https://spendr-blue.vercel.app',
+        'https://spendr-8gquyn2s-nathans-projects-7ee4c021.vercel.app',
     ]
 )
+
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_ALL_ORIGINS = False
 
-SECURE_HSTS_SECONDS = int(os.getenv('SECURE_HSTS_SECONDS', '31536000' if not DEBUG else '0'))
-SECURE_HSTS_INCLUDE_SUBDOMAINS = get_bool_env('SECURE_HSTS_INCLUDE_SUBDOMAINS', not DEBUG)
-SECURE_HSTS_PRELOAD = get_bool_env('SECURE_HSTS_PRELOAD', not DEBUG)
-SECURE_SSL_REDIRECT = get_bool_env('SECURE_SSL_REDIRECT', not DEBUG)
-SESSION_COOKIE_SECURE = get_bool_env('SESSION_COOKIE_SECURE', not DEBUG)
-CSRF_COOKIE_SECURE = get_bool_env('CSRF_COOKIE_SECURE', not DEBUG)
-SESSION_COOKIE_SAMESITE = 'Lax'
-CSRF_COOKIE_SAMESITE = 'Lax'
+SECURE_HSTS_SECONDS = int(
+    os.getenv(
+        'SECURE_HSTS_SECONDS',
+        '31536000' if not DEBUG else '0'
+    )
+)
+
+SECURE_HSTS_INCLUDE_SUBDOMAINS = get_bool_env(
+    'SECURE_HSTS_INCLUDE_SUBDOMAINS',
+    not DEBUG
+)
+
+SECURE_HSTS_PRELOAD = get_bool_env(
+    'SECURE_HSTS_PRELOAD',
+    not DEBUG
+)
+
+SECURE_SSL_REDIRECT = get_bool_env(
+    'SECURE_SSL_REDIRECT',
+    not DEBUG
+)
+
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SAMESITE = 'None'
+CSRF_COOKIE_SAMESITE = 'None'
 SESSION_COOKIE_HTTPONLY = True
 CSRF_COOKIE_HTTPONLY = False
